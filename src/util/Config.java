@@ -5,4 +5,5 @@ package util;
  */
 public class Config {
     public static final String ROOT_DOMAIN = "http://www.booking.com";
+    public static final int MAX_NUM_OF_THREAD = 5;
 }
