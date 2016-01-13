@@ -21,6 +21,7 @@ public class ParsingThreadExecutor {
             System.out.println("========== Parsing started ==========");
 
             ExecutorService executor = Executors.newFixedThreadPool(Config.MAX_NUM_OF_THREAD);
+            // comment
             for (String link: mListLink){
                 ParsingThread parsingThread = new ParsingThread(link);
                 executor.execute(parsingThread);
