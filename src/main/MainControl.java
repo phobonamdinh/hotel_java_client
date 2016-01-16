@@ -101,7 +101,9 @@ public class MainControl implements IOnParsingControlState{
 
     @Override
     public void onParsingDoneWithAnObject(String linkParsing, Hotel hotel) {
-        mListHotels.add(hotel);
+        if (hotel != null)
+            mListHotels.add(hotel);
+
         System.out.println("Stop width: " + linkParsing);
     }
 

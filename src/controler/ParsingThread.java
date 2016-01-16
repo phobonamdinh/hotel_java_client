@@ -1,6 +1,6 @@
 package controler;
 
-import model.Hotel;
+import org.jsoup.nodes.Document;
 import util.Config;
 
 /**
@@ -28,7 +28,9 @@ public class ParsingThread implements Runnable {
             }
 
             if (parsingControl != null) {
-                mOnParsingControlState.onParsingDoneWithAnObject(mLinkToParsing, parsingControl.parseHotel());
+                Document document = parsingControl.loadData();
+                mOnParsingControlState.onParsingDoneWithAnObject(mLinkToParsing,
+                        document != null ? parsingControl.parseHotel(document) : null);
             }
         }
     }
