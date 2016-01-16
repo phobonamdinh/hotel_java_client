@@ -7,8 +7,8 @@ public class Hotel {
     private String mName;
     private String mAddress;
     private String mPhone;
-    private long mLatitude;
-    private long mLongitude;
+    private double mLatitude;
+    private double mLongitude;
     private float mVotingValue;
     private float mNumOfVote;
     private String mWebsite;
@@ -34,19 +34,20 @@ public class Hotel {
         mPhone = phone;
     }
 
-    public long getLatitude() {
+
+    public double getLatitude() {
         return mLatitude;
     }
 
-    public void setLatitude(long latitude) {
+    public void setLatitude(double latitude) {
         mLatitude = latitude;
     }
 
-    public long getLongitude() {
+    public double getLongitude() {
         return mLongitude;
     }
 
-    public void setLongitude(long longitude) {
+    public void setLongitude(double longitude) {
         mLongitude = longitude;
     }
 
@@ -84,5 +85,20 @@ public class Hotel {
 
     public void setEmail(String email) {
         mEmail = email;
+    }
+
+    @Override
+    public String toString() {
+        return "Hotel{" +
+                "mName='" + mName + '\'' +
+                ", mAddress='" + mAddress + '\'' +
+                ", mPhone='" + mPhone + '\'' +
+                ", mLatitude=" + mLatitude +
+                ", mLongitude=" + mLongitude +
+                ", mVotingValue=" + mVotingValue +
+                ", mNumOfVote=" + mNumOfVote +
+                ", mWebsite='" + mWebsite + '\'' +
+                ", mEmail='" + mEmail + '\'' +
+                '}';
     }
 }
