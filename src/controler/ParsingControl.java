@@ -5,11 +5,12 @@ import model.Hotel;
 /**
  * Created by TienDQ on 1/13/16.
  */
-public class ParsingControl {
+public abstract class ParsingControl {
+    private String mLink;
 
-    public static Hotel parseHotel(String linkToParse){
-        Hotel hotel = new Hotel();
-
-        return hotel;
+    public ParsingControl(String mLink) {
+        this.mLink = mLink;
     }
+
+    public abstract Hotel parseHotel();
 }
