@@ -14,6 +14,7 @@ public class ParsingThreadExecutor {
 
     public ParsingThreadExecutor(List<String> listLink) {
         this.mListLink = listLink;
+        System.out.println(mListLink.toString());
     }
 
     public void run(){
