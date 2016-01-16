@@ -11,27 +11,29 @@ import java.util.concurrent.Executors;
  */
 public class ParsingThreadExecutor {
     private List<String> mListLink;
+    private IOnParsingControlState mOnParsingControlState;
 
-    public ParsingThreadExecutor(List<String> listLink) {
+    public ParsingThreadExecutor(List<String> listLink, IOnParsingControlState onParsingControlState) {
         this.mListLink = listLink;
+        this.mOnParsingControlState = onParsingControlState;
         System.out.println(mListLink.toString());
     }
 
     public void run(){
-        if (mListLink != null) {
-            System.out.println("========== Parsing started ==========");
+        if (mListLink != null && mListLink.size() > 0) {
+            if (mOnParsingControlState != null){
+                ExecutorService executor = Executors.newFixedThreadPool(Config.MAX_NUM_OF_THREAD);
 
-            ExecutorService executor = Executors.newFixedThreadPool(Config.MAX_NUM_OF_THREAD);
-            // comment
-            for (String link: mListLink){
-                ParsingThread parsingThread = new ParsingThread(link);
-                executor.execute(parsingThread);
+                for (String link: mListLink){
+                    ParsingThread parsingThread = new ParsingThread(link, mOnParsingControlState);
+                    executor.execute(parsingThread);
+                }
+                executor.shutdown();
+
+                while (!executor.isTerminated()){}
+
+                mOnParsingControlState.onParsingFinish();
             }
-            executor.shutdown();
-
-            while (!executor.isTerminated()){}
-
-            System.out.println("========== Parsing finished ==========");
         } else {
             System.out.println("========== Nothing to parsing ==========");
         }

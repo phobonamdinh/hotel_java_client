@@ -1,17 +1,36 @@
 package model;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by TienDQ on 1/13/16.
  */
 public class Hotel {
+    @SerializedName("name")
     private String mName;
+
+    @SerializedName("address")
     private String mAddress;
+
+    @SerializedName("phone")
     private String mPhone;
+
+    @SerializedName("latitude")
     private double mLatitude;
+
+    @SerializedName("longitude")
     private double mLongitude;
+
+    @SerializedName("voting_value")
     private float mVotingValue;
-    private float mNumOfVote;
+
+    @SerializedName("num_of_vote")
+    private int mNumOfVote;
+
+    @SerializedName("website")
     private String mWebsite;
+
+    @SerializedName("email")
     private String mEmail;
 
     public String getName() {
@@ -59,11 +78,11 @@ public class Hotel {
         mVotingValue = votingValue;
     }
 
-    public float getNumOfVote() {
+    public int getNumOfVote() {
         return mNumOfVote;
     }
 
-    public void setNumOfVote(float numOfVote) {
+    public void setNumOfVote(int numOfVote) {
         mNumOfVote = numOfVote;
     }
 
