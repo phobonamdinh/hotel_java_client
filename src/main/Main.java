@@ -20,60 +20,7 @@ public class Main {
         listLink.add(booking);
         listLink.add(diachiso);
 
-        run(listLink);
-    }
-
-    public static void run(List<String> listLink){
-        if (listLink != null && listLink.size() > 0){
-            for (String link: listLink){
-                if (link != null && link.contains(Config.BASE_DOMAIN_BOOKING)){
-                    runForBooking(link);
-                } else if (link != null && link.contains(Config.BASE_DOMAIN_DIACHISO)){
-                    runForDiaChiSo(link);
-                }
-            }
-        }
-    }
-
-    public static void runForDiaChiSo(String linkOfListAddress){
-        try{
-            List<String> linksToParsing = new ArrayList<>();
-            Document doc = Jsoup.connect(linkOfListAddress).get();
-
-            Elements elements = doc.select("h2.listing-name");
-            if (elements != null){
-                for (int i = 0; i < elements.size(); i++) {
-                    Element e = elements.get(i).select("a[href]").first();
-                    linksToParsing.add(e.attr("href"));
-                }
-
-                ParsingThreadExecutor executor = new ParsingThreadExecutor(linksToParsing);
-                executor.run();
-            }
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    public static void runForBooking(String linkOfListAddress){
-        try {
-            List<String> linksToParsing = new ArrayList<>();
-            Document doc = Jsoup.connect(linkOfListAddress).get();
-
-            Elements elements = doc.select("a.hotel_name_link");
-
-            if (elements != null) {
-                for (int i = 0; i < elements.size(); i++) {
-                    Element e = elements.get(i).select("a[href]").first();
-                    linksToParsing.add(Config.HTTP_ROOT + e.attr("href"));
-                }
-
-                ParsingThreadExecutor executor = new ParsingThreadExecutor(linksToParsing);
-                executor.run();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        new MainControl(listLink).run();
     }
 
 }

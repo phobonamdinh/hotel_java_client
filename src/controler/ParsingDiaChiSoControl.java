@@ -5,6 +5,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import util.ObjectUtil;
 
 import java.io.IOException;
 
@@ -74,7 +75,7 @@ public class ParsingDiaChiSoControl extends ParsingControl {
             e.printStackTrace();
         }
 
-        System.out.println(hotel.toString());
+        System.out.println(ObjectUtil.toJson(hotel));
         return hotel;
     }
 }
