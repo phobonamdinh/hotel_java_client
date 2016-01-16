@@ -1,6 +1,10 @@
 package controler;
 
 import model.Hotel;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
+import java.io.IOException;
 
 /**
  * Created by TienDQ on 1/13/16.
@@ -12,5 +16,15 @@ public abstract class ParsingControl {
         this.mLink = mLink;
     }
 
-    public abstract Hotel parseHotel();
+    public Document loadData(){
+        try {
+            return Jsoup.connect(mLink).get();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public abstract Hotel parseHotel(Document document);
 }
