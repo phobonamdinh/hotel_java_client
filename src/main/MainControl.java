@@ -55,7 +55,7 @@ public class MainControl implements IOnParsingControlState{
 
     public List<String> getListLinksFromDiaChiSo(String linkOfListAddress){
         try{
-            Document doc = Jsoup.connect(linkOfListAddress).get();
+            Document doc = Jsoup.connect(linkOfListAddress).timeout(Config.CONNECT_TIMEOUT).get();
 
             Elements elements = doc.select("h2.listing-name");
             if (elements != null){
@@ -77,7 +77,7 @@ public class MainControl implements IOnParsingControlState{
 
     public List<String> getListLinksFromBooking(String linkOfListAddress){
         try {
-            Document doc = Jsoup.connect(linkOfListAddress).get();
+            Document doc = Jsoup.connect(linkOfListAddress).timeout(Config.CONNECT_TIMEOUT).get();
 
             Elements elements = doc.select("a.hotel_name_link");
 
@@ -102,7 +102,7 @@ public class MainControl implements IOnParsingControlState{
 
         try{
             AppUtil.enableSSLSocket();
-            Document doc = Jsoup.connect(linkOfListAddress).get();
+            Document doc = Jsoup.connect(linkOfListAddress).timeout(Config.CONNECT_TIMEOUT).get();
 
             Elements elements = doc.select("div.place-hotel-item-name");
             if (elements != null){

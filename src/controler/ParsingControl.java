@@ -3,6 +3,7 @@ package controler;
 import model.Hotel;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import util.Config;
 
 import java.io.IOException;
 
@@ -18,7 +19,7 @@ public abstract class ParsingControl {
 
     public Document loadData(){
         try {
-            return Jsoup.connect(mLink).timeout(20*1000).get();
+            return Jsoup.connect(mLink).timeout(Config.CONNECT_TIMEOUT).get();
         }catch (IOException e){
             e.printStackTrace();
         }
