@@ -10,4 +10,5 @@ public class Config {
     public static final String BASE_DOMAIN_DIACHISO = "diachiso.vn";
     public static final String BASE_DOMAIN_IVIVU = "ivivu.com";
     public static final int MAX_NUM_OF_THREAD = 5;
+    public static final int CONNECT_TIMEOUT = 20 * 1000;
 }
