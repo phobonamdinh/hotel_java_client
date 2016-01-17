@@ -1,13 +1,10 @@
 package controler;
 
 import model.Hotel;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import util.ObjectUtil;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -99,7 +96,6 @@ public class ParsingDiaChiSoControl extends ParsingControl {
             }
         }
 
-        System.out.println(ObjectUtil.toJson(hotel));
         return hotel;
     }
 }

@@ -25,6 +25,8 @@ public class ParsingThread implements Runnable {
                 parsingControl = new ParsingDiaChiSoControl(mLinkToParsing);
             } else if (mLinkToParsing.contains(Config.BASE_DOMAIN_BOOKING)) {
                 parsingControl = new ParsingBookingControl(mLinkToParsing);
+            } else if (mLinkToParsing.contains(Config.BASE_DOMAIN_IVIVU)) {
+                parsingControl = new ParsingIvivuControl(mLinkToParsing);
             }
 
             if (parsingControl != null) {
