@@ -7,6 +7,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import util.AppUtil;
 import util.Config;
 import util.ObjectUtil;
 
@@ -29,12 +30,15 @@ public class MainControl implements IOnParsingControlState{
 
     public void run(){
         if (mListLinks != null && mListLinks.size() > 0){
+            System.out.println("========== Parsing is started ==========");
             for (String link: mListLinks){
                 List<String> links = null;
                 if (link != null && link.contains(Config.BASE_DOMAIN_BOOKING)){
                     links = getListLinksFromBooking(link);
                 } else if (link != null && link.contains(Config.BASE_DOMAIN_DIACHISO)){
                     links = getListLinksFromDiaChiSo(link);
+                } else if (link != null && link.contains(Config.BASE_DOMAIN_IVIVU)){
+                    links = getListLinksFromIvivu(link);
                 }
 
                 if (link != null && links.size() > 0){
@@ -94,6 +98,30 @@ public class MainControl implements IOnParsingControlState{
         return null;
     }
 
+    public List<String> getListLinksFromIvivu(String linkOfListAddress){
+
+        try{
+            AppUtil.enableSSLSocket();
+            Document doc = Jsoup.connect(linkOfListAddress).get();
+
+            Elements elements = doc.select("div.place-hotel-item-name");
+            if (elements != null){
+                List<String> linksToParsing = new ArrayList<>();
+
+                for (int i = 0; i < elements.size(); i++) {
+                    Element e = elements.get(i).select("a[href]").first();
+                    linksToParsing.add("https:" + e.attr("href"));
+                }
+
+                return  linksToParsing;
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     @Override
     public void onParsingStart(String linkParsing) {
         System.out.println("Start width: " + linkParsing);
@@ -110,5 +138,6 @@ public class MainControl implements IOnParsingControlState{
     @Override
     public void onParsingFinish() {
         ObjectUtil.writeToFile(mListHotels);
+        System.out.println("========== Parsing is finished ==========");
     }
 }
