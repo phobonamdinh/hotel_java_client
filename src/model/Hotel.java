@@ -2,6 +2,8 @@ package model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 /**
  * Created by TienDQ on 1/13/16.
  */
@@ -32,6 +34,12 @@ public class Hotel {
 
     @SerializedName("email")
     private String mEmail;
+
+    @SerializedName("images")
+    private List<String> mImages;
+
+    @SerializedName("tags")
+    private List<String> mTags;
 
     public String getName() {
         return mName;
@@ -106,6 +114,22 @@ public class Hotel {
         mEmail = email;
     }
 
+    public List<String> getImages() {
+        return mImages;
+    }
+
+    public void setImages(List<String> images) {
+        mImages = images;
+    }
+
+    public List<String> getTags() {
+        return mTags;
+    }
+
+    public void setTags(List<String> tags) {
+        mTags = tags;
+    }
+
     @Override
     public String toString() {
         return "Hotel{" +
@@ -118,6 +142,8 @@ public class Hotel {
                 ", mNumOfVote=" + mNumOfVote +
                 ", mWebsite='" + mWebsite + '\'' +
                 ", mEmail='" + mEmail + '\'' +
+                ", mImages=" + mImages +
+                ", mTags=" + mTags +
                 '}';
     }
 }
