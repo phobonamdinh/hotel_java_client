@@ -3,6 +3,7 @@ package main;
 import controler.IOnParsingControlState;
 import controler.ParsingThreadExecutor;
 import model.Hotel;
+import model.LinkNode;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -18,44 +19,58 @@ import java.util.List;
  * Created by TienDQ on 1/17/16.
  */
 public class MainControl implements IOnParsingControlState{
-    private List<String> mListLinks;
+    private List<LinkNode> mListLinkNodes;
     private List<Hotel> mListHotels;
     private List<String> mListLinksToParsing;
 
-    public MainControl(List<String> listLinks) {
-        mListLinks = listLinks;
+    public MainControl(List<LinkNode> listLinkNodes) {
+        mListLinkNodes = listLinkNodes;
         mListHotels = new ArrayList<>();
         mListLinksToParsing = new ArrayList<>();
     }
 
     public void run(){
-        if (mListLinks != null && mListLinks.size() > 0){
+        if (mListLinkNodes != null && mListLinkNodes.size() > 0){
             System.out.println("========== Parsing is started ==========");
-            for (String link: mListLinks){
-                List<String> links = null;
-                if (link != null && link.contains(Config.BASE_DOMAIN_BOOKING)){
-                    links = getListLinksFromBooking(link);
-                } else if (link != null && link.contains(Config.BASE_DOMAIN_DIACHISO)){
-                    links = getListLinksFromDiaChiSo(link);
-                } else if (link != null && link.contains(Config.BASE_DOMAIN_IVIVU)){
-                    links = getListLinksFromIvivu(link);
+            for (LinkNode linkNode: mListLinkNodes){
+                if (linkNode != null && linkNode.getType() == LinkNode.TYPE_BOOKING){
+                    getListLinksFromBooking(linkNode);
+                } else if (linkNode != null && linkNode.getType() == LinkNode.TYPE_DIACHISO){
+                    getListLinksFromDiaChiSo(linkNode);
+                } else if (linkNode != null && linkNode.getType() == LinkNode.TYPE_IVIVU){
+                    getListLinksFromIvivu(linkNode);
                 }
 
-                if (link != null && links.size() > 0){
-                    mListLinksToParsing.addAll(links);
+                if (linkNode != null && linkNode.getCurrentLink()!= null && linkNode.getListLinksToParsing() != null){
+                    mListLinksToParsing.addAll(linkNode.getListLinksToParsing());
                 }
             }
 
-            ParsingThreadExecutor executor = new ParsingThreadExecutor(mListLinksToParsing, this);
-            executor.run();
+            if (mListLinksToParsing != null && mListLinksToParsing.size() > 0){
+                ParsingThreadExecutor executor = new ParsingThreadExecutor(mListLinksToParsing, this);
+                executor.run();
+            } else {
+                System.out.println("=====================================");
+                System.out.println("Result:");
+                for (LinkNode linkNode: mListLinkNodes){
+                    if (linkNode.getType() == LinkNode.TYPE_BOOKING)
+                        System.out.println("- " + Config.BASE_DOMAIN_BOOKING + ": " + linkNode.getNumOfLinkIsParsed() + " pages");
+                    else if (linkNode.getType() == LinkNode.TYPE_DIACHISO)
+                        System.out.println("- " + Config.BASE_DOMAIN_DIACHISO + ": " + linkNode.getNumOfLinkIsParsed() + " pages");
+                    else if (linkNode.getType() == LinkNode.TYPE_IVIVU)
+                        System.out.println("- " + Config.BASE_DOMAIN_IVIVU + ": " + linkNode.getNumOfLinkIsParsed() + " pages");
+                }
+            }
         }else {
             System.out.println("========== Nothing to parsing ==========");
         }
     }
 
-    public List<String> getListLinksFromDiaChiSo(String linkOfListAddress){
+    public void getListLinksFromDiaChiSo(LinkNode linkNode){
+        if (linkNode.getCurrentLink() == null) return;
+
         try{
-            Document doc = Jsoup.connect(linkOfListAddress).timeout(Config.CONNECT_TIMEOUT).get();
+            Document doc = Jsoup.connect(linkNode.getCurrentLink()).timeout(Config.CONNECT_TIMEOUT).get();
 
             Elements elements = doc.select("h2.listing-name");
             if (elements != null){
@@ -66,18 +81,18 @@ public class MainControl implements IOnParsingControlState{
                     linksToParsing.add(e.attr("href"));
                 }
 
-                return  linksToParsing;
+                linkNode.setListLinksToParsing(linksToParsing);
             }
         } catch (Exception e){
             e.printStackTrace();
         }
-
-        return null;
     }
 
-    public List<String> getListLinksFromBooking(String linkOfListAddress){
+    public void getListLinksFromBooking(LinkNode linkNode){
+        if (linkNode.getCurrentLink() == null) return;
+
         try {
-            Document doc = Jsoup.connect(linkOfListAddress).timeout(Config.CONNECT_TIMEOUT).get();
+            Document doc = Jsoup.connect(linkNode.getCurrentLink()).timeout(Config.CONNECT_TIMEOUT).get();
 
             Elements elements = doc.select("a.hotel_name_link");
 
@@ -89,20 +104,40 @@ public class MainControl implements IOnParsingControlState{
                     linksToParsing.add(Config.HTTP_ROOT + Config.BASE_DOMAIN_BOOKING + e.attr("href"));
                 }
 
-                return  linksToParsing;
+                linkNode.setListLinksToParsing(linksToParsing);
+            }
+
+            Element rootPageElement = doc.select("ul.x-list").first();
+            if (rootPageElement != null){
+                Elements pagesElement = rootPageElement.select("li.sr_pagination_item");
+                if (pagesElement != null && pagesElement.size() > 0){
+                    int currentPage = 0;
+                    for (Element pageElement: pagesElement){
+                        if (pageElement.hasClass("current")){
+                            currentPage = pagesElement.indexOf(pageElement);
+                            break;
+                        }
+                    }
+
+                    if (currentPage < pagesElement.size() - 1 ){
+                        linkNode.setNextLink(Config.HTTP_ROOT + Config.BASE_DOMAIN_BOOKING
+                                + pagesElement.get(currentPage + 1).select("a.sr_pagination_link").first().attr("href"));
+                    } else {
+                        linkNode.setNextLink(null);
+                    }
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return null;
     }
 
-    public List<String> getListLinksFromIvivu(String linkOfListAddress){
+    public void getListLinksFromIvivu(LinkNode linkNode){
+        if (linkNode.getCurrentLink() == null) return;
 
         try{
             AppUtil.enableSSLSocket();
-            Document doc = Jsoup.connect(linkOfListAddress).timeout(Config.CONNECT_TIMEOUT).get();
+            Document doc = Jsoup.connect(linkNode.getCurrentLink()).timeout(Config.CONNECT_TIMEOUT).get();
 
             Elements elements = doc.select("div.place-hotel-item-name");
             if (elements != null){
@@ -113,13 +148,11 @@ public class MainControl implements IOnParsingControlState{
                     linksToParsing.add("https:" + e.attr("href"));
                 }
 
-                return  linksToParsing;
+                linkNode.setListLinksToParsing(linksToParsing);
             }
         } catch (Exception e){
             e.printStackTrace();
         }
-
-        return null;
     }
 
     @Override
@@ -139,5 +172,13 @@ public class MainControl implements IOnParsingControlState{
     public void onParsingFinish() {
         ObjectUtil.writeToFile(mListHotels);
         System.out.println("========== Parsing is finished ==========");
+
+        mListHotels.clear();
+        mListLinksToParsing.clear();
+        for (LinkNode linkNode : mListLinkNodes) {
+            linkNode.setCurrentLink(linkNode.getNextLink());
+        }
+
+        run();
     }
 }
